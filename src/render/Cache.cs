@@ -66,12 +66,37 @@ namespace MeshViewer {
 
         /**
          * <summary>
+         * Adds a GameObject which has a visible renderer to the cache.
+         * </summary>
+         * <param name="obj">The object to add</param>
+         * <param name="renderType">The type of collider</param>
+         * <return>True if the object is visible and was cached, false otherwise</return>
+         */
+        private bool CacheVisibleCollider(GameObject obj, RenderType renderType) {
+            MeshRenderer renderer = obj.GetComponent<MeshRenderer>();
+
+            // Check if the mesh is already visible
+            if (renderer != null && renderer.enabled == true) {
+                cache.Add(new RenderData(obj, obj, renderType, MakeMaterial(), true));
+                return true;
+            }
+
+            return false;
+        }
+
+        /**
+         * <summary>
          * Adds a GameObject with a BoxCollider to the cache.
          * </summary>
          * <param name="obj">The object to add</param>
          * <param name="collider">The collider to cache</param>
          */
         private void CacheBoxCollider(GameObject obj, BoxCollider collider) {
+            // Check if already visible
+            if (CacheVisibleCollider(obj, RenderType.BoxCollider) == true) {
+                return;
+            }
+
             GameObject child = GameObject.CreatePrimitive(PrimitiveType.Cube);
             GameObject.DestroyImmediate(child.GetComponent<BoxCollider>());
 
@@ -129,6 +154,11 @@ namespace MeshViewer {
          * <param name="collider">The collider to cache</param>
          */
         private void CacheSphereCollider(GameObject obj, SphereCollider collider) {
+            // Check if already visible
+            if (CacheVisibleCollider(obj, RenderType.SphereCollider) == true) {
+                return;
+            }
+
             GameObject child = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             GameObject.DestroyImmediate(child.GetComponent<SphereCollider>());
 
@@ -149,11 +179,8 @@ namespace MeshViewer {
          * <param name="collider">The collider to cache</param>
          */
         private void CacheMeshCollider(GameObject obj, MeshCollider collider) {
-            MeshRenderer renderer = obj.GetComponent<MeshRenderer>();
-
-            // Check if the mesh is already visible
-            if (renderer != null && renderer.enabled == true) {
-                cache.Add(new RenderData(obj, obj, RenderType.MeshColliderVisible, MakeMaterial()));
+            // Check if already visible
+            if (CacheVisibleCollider(obj, RenderType.MeshCollider) == true) {
                 return;
             }
 
@@ -169,7 +196,7 @@ namespace MeshViewer {
 
             filter.mesh = collider.sharedMesh;
 
-            cache.Add(new RenderData(obj, child, RenderType.MeshColliderInvisible, MakeMaterial()));
+            cache.Add(new RenderData(obj, child, RenderType.MeshCollider, MakeMaterial()));
         }
 
         /**
@@ -377,7 +404,7 @@ namespace MeshViewer {
                 else if (data.renderType == RenderType.CapsuleCollider) {
                     UpdateObject(data, colliders.capsuleColliders, colors.capsuleColliders);
                 }
-                else if (data.renderType == RenderType.MeshColliderInvisible) {
+                else if (data.renderType == RenderType.MeshCollider) {
                     UpdateObject(data, colliders.meshColliders, colors.meshColliders);
                 }
                 else if (data.renderType == RenderType.SphereCollider) {

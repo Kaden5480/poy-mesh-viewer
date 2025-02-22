@@ -5,6 +5,7 @@ namespace MeshViewer {
         public GameObject parent { get; }
         public RenderType renderType { get; }
 
+        private bool visible = false;
         private GameObject obj = null;
         private Renderer renderer = null;
         private Material normalMaterial = null;
@@ -24,17 +25,19 @@ namespace MeshViewer {
          * <param name="obj">The object which contains the renderer</param>
          * <param name="renderType">What kind of object this is</param>
          * <param name="material">The material to apply to the renderer when this object is shown</param>
+         * <param name="visible">Whether this object is visible by default</param>
          */
-        public RenderData(GameObject parent, GameObject obj, RenderType renderType, Material material) {
+        public RenderData(GameObject parent, GameObject obj, RenderType renderType, Material material, bool visible = false) {
             this.parent = parent;
             this.obj = obj;
             this.renderType = renderType;
+            this.visible = visible;
             renderMaterial = material;
 
             renderer = obj.GetComponent<Renderer>();
 
-            // If this is a visible mesh, store its normal material
-            if (renderType == RenderType.MeshColliderVisible) {
+            // If this is a object, store its normal material
+            if (visible == true) {
                 normalMaterial = renderer.material;
             }
             else {
@@ -51,8 +54,8 @@ namespace MeshViewer {
         public void Show(string colorString) {
             Color color = Config.Colors.StringToColor(colorString);
 
-            // If this is a visible mesh, just swap the material
-            if (renderType == RenderType.MeshColliderVisible) {
+            // If this is a visible object, just swap the material
+            if (visible == true) {
                 renderer.material = renderMaterial;
             }
             // Otherwise, display the custom made renderer
@@ -70,9 +73,9 @@ namespace MeshViewer {
          * </summary>
          */
         public void Hide() {
-            // If this isn't a visible mesh, disable the custom
+            // If this isn't a visible object, disable the custom
             // made renderer
-            if (renderType != RenderType.MeshColliderVisible) {
+            if (visible == false) {
                 obj.SetActive(false);
                 return;
             }
@@ -82,7 +85,7 @@ namespace MeshViewer {
                 return;
             }
 
-            // Restore the default material for the visible mesh
+            // Restore the default material for the visible object
             renderer.material = normalMaterial;
         }
     }

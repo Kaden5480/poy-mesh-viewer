@@ -8,8 +8,7 @@ namespace MeshViewer {
     public enum RenderType {
         BoxCollider,
         CapsuleCollider,
-        MeshColliderVisible,
-        MeshColliderInvisible,
+        MeshCollider,
         SphereCollider,
 
         SummitStuffStart,
