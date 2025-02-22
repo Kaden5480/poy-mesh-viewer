@@ -7,6 +7,9 @@ A
 [Peaks of Yore](https://store.steampowered.com/app/2236070/)
 mod which displays colliders and other stuff.
 
+Thanks to [Elvonia](https://github.com/Elvonia/) for help with figuring
+out how to render different colliders.
+
 # Overview
 - [Installing](#installing)
     - [BepInEx](#bepinex)
