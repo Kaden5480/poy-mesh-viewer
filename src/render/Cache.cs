@@ -329,6 +329,14 @@ namespace MeshViewer {
             Config.Render render = config.render;
             Config.SummitStuff summitStuff = config.render.summitStuff;
 
+            // If rendering is disabled, just hide everything
+            if (config.enabled.Value == false) {
+                foreach (RenderData data in cache) {
+                    data.Hide();
+                }
+                return;
+            }
+
             // For each type of object, update whether it is displayed
             // and also the color which it will be displayed with
 

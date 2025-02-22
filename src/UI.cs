@@ -20,6 +20,7 @@ namespace MeshViewer {
         const int width = 300;
         const int height = 400;
         const int padding = 20;
+        const int buttonWidth = 100;
 
         private Vector2 scrollPosition = Vector2.zero;
 
@@ -86,12 +87,12 @@ namespace MeshViewer {
             // Show set color/done depending on whether the color picker
             // is in use for this option
             if (colorPicker[text] == false
-                && GUILayout.Button("Set Color", GUILayout.Width(100))
+                && GUILayout.Button("Set Color", GUILayout.Width(buttonWidth))
             ) {
                 colorPicker[text] = true;
             }
             else if (colorPicker[text] == true
-                && GUILayout.Button("Done", GUILayout.Width(100))
+                && GUILayout.Button("Done", GUILayout.Width(buttonWidth))
             ) {
                 colorPicker[text] = false;
             }
@@ -173,6 +174,25 @@ namespace MeshViewer {
 
             Config.Colors colors = config.colors;
 
+            // Allow enabling/disabling all rendering
+            GUILayout.Label("== Global ==");
+            if (config.enabled.Value == false
+                && GUILayout.Button(
+                    "Enable", GUILayout.Width(buttonWidth)
+                ) == true
+            ) {
+                config.enabled.Value = true;
+                cache.Update();
+            }
+            else if (config.enabled.Value == true
+                && GUILayout.Button(
+                    "Disable", GUILayout.Width(buttonWidth)
+                ) == true
+            ) {
+                config.enabled.Value = false;
+                cache.Update();
+            }
+
             GUILayout.Label("== Render ==");
             Config.Render render = config.render;
             RenderOption("Peak Boundaries", render.peakBoundaries, colors.peakBoundaries);
@@ -199,6 +219,7 @@ namespace MeshViewer {
             RenderOption("Summit Level", summitStuff.summitLevel, colors.summitLevel, true);
 
             GUILayout.EndScrollView();
+
 
             // Update displayed objects if clicked
             if (GUILayout.Button("Update") == true) {

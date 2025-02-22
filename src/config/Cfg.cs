@@ -23,10 +23,12 @@ namespace MeshViewer.Config {
 #if BEPINEX
         public ConfigEntry<string> _toggleKeybind;
         public ConfigEntry<bool> showUIByDefault;
+        public ConfigEntry<bool> enabled;
 
 #elif MELONLOADER
         public MelonPreferences_Entry<string> _toggleKeybind;
         public MelonPreferences_Entry<bool> showUIByDefault;
+        public MelonPreferences_Entry<bool> enabled;
 
 #endif
     }

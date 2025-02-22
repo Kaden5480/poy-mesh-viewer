@@ -24,6 +24,10 @@ namespace MeshViewer {
                 "General", "showUIByDefault", true,
                 "Whether the UI should be shown by default"
             );
+            config.enabled = Config.Bind(
+                "General", "enabled", false,
+                "Whether rendering is enabled"
+            );
 
             // Colors
             config.colors.peakBoundaries = Config.Bind(
@@ -227,6 +231,7 @@ namespace MeshViewer {
 
             config._toggleKeybind = general.CreateEntry<string>("toggleKeybind", defaultToggleKeybind.ToString());
             config.showUIByDefault = general.CreateEntry<bool>("showUIByDefault", true);
+            config.enabled = general.CreateEntry<bool>("enabled", false);
 
             // Custom colors
             MelonPreferences_Category colors = MelonPreferences.CreateCategory("MeshViewer_Colors");
