@@ -154,11 +154,6 @@ namespace MeshViewer {
          * <param name="collider">The collider to cache</param>
          */
         private void CacheSphereCollider(GameObject obj, SphereCollider collider) {
-            // Check if already visible
-            if (CacheVisibleCollider(obj, RenderType.SphereCollider) == true) {
-                return;
-            }
-
             GameObject child = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             GameObject.DestroyImmediate(child.GetComponent<SphereCollider>());
 
