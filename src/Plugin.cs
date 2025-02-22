@@ -46,6 +46,14 @@ namespace MeshViewer {
                 "Colors", "windSectors", colorWindSectors,
                 "The color to use for wind sectors"
             );
+            config.colors.playerPhysics = Config.Bind(
+                "Colors", "playerPhysics", colorPlayerPhysics,
+                "The color to use for player physics"
+            );
+            config.colors.playerTriggers = Config.Bind(
+                "Colors", "playerTriggers", colorPlayerTriggers,
+                "The color to use for player triggers"
+            );
             config.colors.boxColliders = Config.Bind(
                 "Colors", "boxColliders", colorBoxColliders,
                 "The color to use for box colliders"
@@ -99,6 +107,14 @@ namespace MeshViewer {
             config.render.windSectors = Config.Bind(
                 "Render", "windSectors", false,
                 "Whether to render wind sectors on Solemn Tempest"
+            );
+            config.render.playerPhysics = Config.Bind(
+                "Render", "playerPhysics", false,
+                "Whether to render player physics"
+            );
+            config.render.playerTriggers = Config.Bind(
+                "Render", "playerTriggers", false,
+                "Whether to render player triggers"
             );
 
             // Colliders
@@ -221,6 +237,8 @@ namespace MeshViewer {
             config.colors.windMillWings = colors.CreateEntry<string>("windMillWings", colorWindMillWings);
             config.colors.timeAttack = colors.CreateEntry<string>("timeAttack", colorTimeAttack);
             config.colors.windSectors = colors.CreateEntry<string>("windSectors", colorWindSectors);
+            config.colors.playerPhysics = colors.CreateEntry<string>("playerPhysics", colorPlayerPhysics);
+            config.colors.playerTriggers = colors.CreateEntry<string>("playerTriggers", colorPlayerTriggers);
             config.colors.boxColliders = colors.CreateEntry<string>("boxColliders", colorBoxColliders);
             config.colors.capsuleColliders = colors.CreateEntry<string>("capsuleColliders", colorCapsuleColliders);
             config.colors.meshColliders = colors.CreateEntry<string>("meshColliders", colorMeshColliders);
@@ -239,6 +257,8 @@ namespace MeshViewer {
             config.render.windMillWings = render.CreateEntry<bool>("windMillWings", false);
             config.render.timeAttack = render.CreateEntry<bool>("timeAttack", false);
             config.render.windSectors = render.CreateEntry<bool>("windSectors", false);
+            config.render.playerPhysics = render.CreateEntry<bool>("playerPhysics", false);
+            config.render.playerTriggers = render.CreateEntry<bool>("playerTriggers", false);
 
             // Colliders
             MelonPreferences_Category colliders = MelonPreferences.CreateCategory("MeshViewer_Colliders");
@@ -306,6 +326,8 @@ namespace MeshViewer {
         // Default colors
         private string colorPeakBoundaries   = RGBToString(198, 120, 221);
         private string colorEventTriggers    = RGBToString(229, 192, 123);
+        private string colorPlayerPhysics    = RGBToString(255, 255, 100);
+        private string colorPlayerTriggers   = RGBToString(241, 141, 153);
         private string colorWindMillWings    = RGBToString(152, 195, 121);
         private string colorTimeAttack       = RGBToString(90, 207, 155);
         private string colorWindSectors      = RGBToString(97, 175, 239);

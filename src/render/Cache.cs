@@ -274,13 +274,6 @@ namespace MeshViewer {
             GameObject[] objs = GameObject.FindObjectsOfType<GameObject>();
 
             foreach (GameObject obj in objs) {
-                if ("Player".Equals(obj.name) == true
-                    || obj.layer == LayerMask.NameToLayer("PlayerPhysics")
-                    || "PlayerTrigger".Equals(obj.tag) == true
-                ) {
-                    continue;
-                }
-
                 CacheObject(obj);
             }
 
@@ -341,7 +334,13 @@ namespace MeshViewer {
 
             foreach (RenderData data in cache) {
                 // Render
-                if (data.parent.layer == LayerMask.NameToLayer("PeakBoundary")) {
+                if (data.parent.layer == LayerMask.NameToLayer("PlayerPhysics")) {
+                    UpdateObject(data, render.playerPhysics, colors.playerPhysics);
+                }
+                else if ("PlayerTrigger".Equals(data.parent.tag) == true) {
+                    UpdateObject(data, render.playerTriggers, colors.playerTriggers);
+                }
+                else if (data.parent.layer == LayerMask.NameToLayer("PeakBoundary")) {
                     UpdateObject(data, render.peakBoundaries, colors.peakBoundaries);
                 }
                 else if (data.parent.layer == LayerMask.NameToLayer("EventTrigger")) {

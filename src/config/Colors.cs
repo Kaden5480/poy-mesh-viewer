@@ -40,6 +40,8 @@ namespace MeshViewer.Config {
         public ConfigEntry<string> windMillWings;
         public ConfigEntry<string> timeAttack;
         public ConfigEntry<string> windSectors;
+        public ConfigEntry<string> playerPhysics;
+        public ConfigEntry<string> playerTriggers;
 
         // Colliders
         public ConfigEntry<string> boxColliders;
@@ -60,6 +62,8 @@ namespace MeshViewer.Config {
         public MelonPreferences_Entry<string> windMillWings;
         public MelonPreferences_Entry<string> timeAttack;
         public MelonPreferences_Entry<string> windSectors;
+        public MelonPreferences_Entry<string> playerPhysics;
+        public MelonPreferences_Entry<string> playerTriggers;
 
         // Colliders
         public MelonPreferences_Entry<string> boxColliders;

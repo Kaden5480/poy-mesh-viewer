@@ -180,6 +180,8 @@ namespace MeshViewer {
             RenderOption("Windmill Wings", render.windMillWings, colors.windMillWings);
             RenderOption("Time Attack", render.timeAttack, colors.timeAttack);
             RenderOption("Wind Sectors (ST)", render.windSectors, colors.windSectors);
+            RenderOption("Player Physics", render.playerPhysics, colors.playerPhysics);
+            RenderOption("Player Triggers", render.playerTriggers, colors.playerTriggers);
 
             GUILayout.Label("== Colliders ==");
             Config.Colliders colliders = config.render.colliders;
