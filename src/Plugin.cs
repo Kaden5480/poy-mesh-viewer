@@ -214,7 +214,7 @@ namespace MeshViewer {
 
             // Custom colors
             MelonPreferences_Category colors = MelonPreferences.CreateCategory("MeshViewer_Colors");
-            color.SetFilePath(filePath);
+            colors.SetFilePath(filePath);
 
             config.colors.peakBoundaries = colors.CreateEntry<string>("peakBoundaries", colorPeakBoundaries);
             config.colors.eventTriggers = colors.CreateEntry<string>("eventTriggers", colorEventTriggers);
@@ -253,7 +253,6 @@ namespace MeshViewer {
             MelonPreferences_Category summitStuff = MelonPreferences.CreateCategory("MeshViewer_SummitStuff");
             summitStuff.SetFilePath(filePath);
 
-            config.render.summitStuff.opacity = summitStuff.CreateEntry<float>("opacity", 0.6f);
             config.render.summitStuff.startRange = summitStuff.CreateEntry<bool>("startRange", false);
             config.render.summitStuff.stamperRange = summitStuff.CreateEntry<bool>("stamperRange", false);
             config.render.summitStuff.summitRange = summitStuff.CreateEntry<bool>("summitRange", false);
