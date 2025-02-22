@@ -2,13 +2,23 @@ using System.Collections.Generic;
 
 using UnityEngine;
 
+using Colors = MeshViewer.Config.Colors;
+
 namespace MeshViewer {
     public class Cache {
         public Config.Cfg config { get; }
         private List<RenderData> cache;
 
+        /**
+         * <summary>
+         * Constructs an instance of Cache.
+         * </summary>
+         * <parma name="config">The user config</param>
+         */
         public Cache(Config.Cfg config) {
             this.config = config;
+
+            // Initialize the cache
             cache = new List<RenderData>();
         }
 
@@ -25,6 +35,7 @@ namespace MeshViewer {
         /**
          * <summary>
          * Makes a transparent material.
+         * This is only used for the "Summit Stuff" category.
          * </summary>
          * <return>The material</return>
          */
@@ -131,6 +142,7 @@ namespace MeshViewer {
         private void CacheMeshCollider(GameObject obj, MeshCollider collider) {
             MeshRenderer renderer = obj.GetComponent<MeshRenderer>();
 
+            // Check if the mesh is already visible
             if (renderer != null && renderer.enabled == true) {
                 cache.Add(new RenderData(obj, obj, RenderType.MeshColliderVisible, MakeMaterial()));
                 return;
@@ -281,40 +293,39 @@ namespace MeshViewer {
          * </summary>
          */
         public void Update() {
-            float red = (float) config.render.color.red.Value / 255f;
-            float green = (float) config.render.color.green.Value / 255f;
-            float blue = (float) config.render.color.blue.Value / 255f;
+            Config.Colors colors = config.colors;
+
+            // For each type of object, update whether it is displayed
+            // and also the color which it will be displayed with
 
             foreach (RenderData data in cache) {
-                Color color = new Color(red, green, blue, 1f);
-
                 // Colliders
                 Config.Colliders colliders = config.render.colliders;
                 if (data.renderType == RenderType.BoxCollider
                     && colliders.boxColliders.Value == true
                 ) {
-                    data.Show(color);
+                    data.Show(colors.boxColliders.Value);
                     continue;
                 }
 
                 if (data.renderType == RenderType.CapsuleCollider
                     && colliders.capsuleColliders.Value == true
                 ) {
-                    data.Show(color);
+                    data.Show(colors.capsuleColliders.Value);
                     continue;
                 }
 
                 if (data.renderType == RenderType.MeshColliderInvisible
                     && colliders.meshColliders.Value == true
                 ) {
-                    data.Show(color);
+                    data.Show(colors.meshColliders.Value);
                     continue;
                 }
 
                 if (data.renderType == RenderType.SphereCollider
                     && colliders.sphereColliders.Value == true
                 ) {
-                    data.Show(color);
+                    data.Show(colors.sphereColliders.Value);
                     continue;
                 }
 
@@ -323,36 +334,28 @@ namespace MeshViewer {
                 if (data.renderType == RenderType.SummitStuffStart
                     && summitStuff.startRange.Value == true
                 ) {
-                    color = Color.red;
-                    color.a = summitStuff.opacity.Value;
-                    data.Show(color);
+                    data.Show(colors.startRange.Value);
                     continue;
                 }
 
                 if (data.renderType == RenderType.SummitStuffStamper
                     && summitStuff.stamperRange.Value == true
                 ) {
-                    color = Color.blue;
-                    color.a = summitStuff.opacity.Value;
-                    data.Show(color);
+                    data.Show(colors.stamperRange.Value);
                     continue;
                 }
 
                 if (data.renderType == RenderType.SummitStuffSummitLevel
                     && summitStuff.summitLevel.Value == true
                 ) {
-                    color = Color.yellow;
-                    color.a = summitStuff.opacity.Value;
-                    data.Show(color);
+                    data.Show(colors.summitLevel.Value);
                     continue;
                 }
 
                 if (data.renderType == RenderType.SummitStuffSummitRange
                     && summitStuff.summitRange.Value == true
                 ) {
-                    color = Color.cyan;
-                    color.a = summitStuff.opacity.Value;
-                    data.Show(color);
+                    data.Show(colors.summitRange.Value);
                     continue;
                 }
 
@@ -362,22 +365,24 @@ namespace MeshViewer {
                     TimeAttackZone timeAttack = data.parent.GetComponent<TimeAttackZone>();
                     PeakWindSolemnTempest peakWind = data.parent.GetComponent<PeakWindSolemnTempest>();
 
+                    // If this isn't a time attack zone/peak wind, it's another kind
+                    // of event trigger
                     if (render.eventTriggers.Value == true
                         && timeAttack == null && peakWind == null
                     ) {
-                        data.Show(color);
+                        data.Show(colors.eventTriggers.Value);
                         continue;
                     }
                     else if (timeAttack != null
                         && render.timeAttack.Value == true
                     ) {
-                        data.Show(color);
+                        data.Show(colors.timeAttack.Value);
                         continue;
                     }
                     else if (peakWind != null
                         && render.windSectors.Value == true
                     ) {
-                        data.Show(color);
+                        data.Show(colors.windSectors.Value);
                         continue;
                     }
                 }
@@ -385,17 +390,18 @@ namespace MeshViewer {
                 if (data.parent.layer == LayerMask.NameToLayer("PeakBoundary")
                     && render.peakBoundaries.Value == true
                 ) {
-                    data.Show(color);
+                    data.Show(colors.peakBoundaries.Value);
                     continue;
                 }
 
                 if (data.parent.layer == LayerMask.NameToLayer("WindMillWings")
                     && render.windMillWings.Value == true
                 ) {
-                    data.Show(color);
+                    data.Show(colors.windMillWings.Value);
                     continue;
                 }
 
+                // If this object wasn't selected to be rendered, just hide it
                 data.Hide();
             }
         }

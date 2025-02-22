@@ -10,6 +10,7 @@ using MelonLoader;
 
 namespace MeshViewer.Config {
     public struct Cfg {
+        public Colors colors;
         public Render render;
 
         public KeyCode toggleKeybind {

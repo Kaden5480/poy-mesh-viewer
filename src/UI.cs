@@ -1,109 +1,207 @@
 using System;
+using System.Collections.Generic;
 
 using UnityEngine;
+
+#if BEPINEX
+using BepInEx.Configuration;
+
+#elif MELONLOADER
+using MelonLoader;
+
+#endif
 
 namespace MeshViewer {
     public class UI {
         private bool showUI;
         private Cache cache;
 
+        // Size info for the GUI
+        const int width = 300;
+        const int height = 400;
+        const int padding = 20;
+
+        private Vector2 scrollPosition = Vector2.zero;
+
+        // Store which colors are being picked
+        private Dictionary<string, bool> colorPicker = new Dictionary<string, bool>();
+
         private Config.Cfg config {
             get => cache.config;
         }
 
+        /**
+         * <summary>
+         * Constructs an instance of UI.
+         * </summary>
+         * <param name="cache">The cache of all objects in the scene</param>
+         */
         public UI(Cache cache) {
             this.cache = cache;
             showUI = config.showUIByDefault.Value;
         }
 
+        /**
+         * <summary>
+         * Executes each frame to check for a toggle input.
+         * </summary>
+         */
         public void Update() {
             if (Input.GetKeyDown(config.toggleKeybind)) {
                 showUI = !showUI;
             }
         }
 
+        /**
+         * <summary>
+         * Renders options for a specific toggle + custom color
+         * </summary>
+         * <param name="text">The name to display for this option</param>
+         * <param name="enabled">Whether rendering of this option is enabled</param>
+         * <param name="colorConfig">The custom color for this option</param>
+         * <param name="canModifyAlpha">Whether the alpha value can be modified for this option</param>
+         */
+#if BEPINEX
+        private void RenderOption(
+            string text,
+            ConfigEntry<bool> enabled,
+            ConfigEntry<string> colorConfig,
+            bool canModifyAlpha = false
+        ) {
+#elif MELONLOADER
+        private void RenderOption(
+            string text,
+            MelonPreferences_Entry<bool> enabled,
+            MelonPreferences_Entry<string> colorConfig,
+            bool canModifyAlpha = false
+        ) {
+#endif
+            if (colorPicker.ContainsKey(text) == false) {
+                // Insert default value if it doesn't exist
+                colorPicker[text] = false;
+            }
+
+            GUILayout.BeginHorizontal();
+
+            // Show set color/done depending on whether the color picker
+            // is in use for this option
+            if (colorPicker[text] == false
+                && GUILayout.Button("Set Color", GUILayout.Width(100))
+            ) {
+                colorPicker[text] = true;
+            }
+            else if (colorPicker[text] == true
+                && GUILayout.Button("Done", GUILayout.Width(100))
+            ) {
+                colorPicker[text] = false;
+            }
+
+            enabled.Value = GUILayout.Toggle(
+                enabled.Value, text
+            );
+
+            GUILayout.EndHorizontal();
+
+            if (colorPicker[text] == false) {
+                return;
+            }
+
+            // If the color picker is in use, render it
+            Color color = Config.Colors.StringToColor(
+                colorConfig.Value
+            );
+
+            int red = (int) (255f * color.r);
+            int green = (int) (255f * color.g);
+            int blue = (int) (255f * color.b);
+            float alpha = color.a;
+
+            GUILayout.Label($"Red: {red}");
+            red = (int) GUILayout.HorizontalSlider(
+                red, 0f, 255f
+            );
+            GUILayout.Label($"Green: {green}");
+            green = (int) GUILayout.HorizontalSlider(
+                green, 0f, 255f
+            );
+            GUILayout.Label($"Blue: {blue}");
+            blue = (int) GUILayout.HorizontalSlider(
+                blue, 0f, 255f
+            );
+
+            // If the alpha value of the color can be modified
+            // also render it
+            if (canModifyAlpha == true) {
+                GUILayout.Label($"Alpha: {alpha}");
+                alpha = (float) Math.Round(GUILayout.HorizontalSlider(
+                    alpha, 0f, 1f
+                ), 2);
+            }
+
+            // Check if restoring the default color was picked
+            if (GUILayout.Button("Restore Default Color") == true) {
+                colorConfig.Value = (string) colorConfig.DefaultValue;
+            }
+            else {
+                color = new Color(
+                    (float) red / 255f,
+                    (float) green / 255f,
+                    (float) blue / 255f,
+                    alpha
+                );
+                colorConfig.Value = Config.Colors.ColorToString(color);
+            }
+        }
+
+        /**
+         * <summary>
+         * Renders the GUI.
+         * </summary>
+         */
         public void Render() {
             if (showUI == false) {
                 return;
             }
 
-            GUILayout.BeginArea(new Rect(10, 10, 150, 580), GUI.skin.box);
+            // Display everything in a box with a scroll view
+            GUILayout.BeginArea(new Rect(10, 10, width, height), GUI.skin.box);
 
-            Config.Render render = config.render;
-
-            if (GUILayout.Button("Save") == true) {
-                cache.Update();
-            }
-
-            GUILayout.Label("== Color ==");
-            GUILayout.Label($"Red: {render.color.red.Value}");
-            render.color.red.Value = (int) GUILayout.HorizontalSlider(
-                render.color.red.Value, 0f, 255f
+            scrollPosition = GUILayout.BeginScrollView(
+                scrollPosition,
+                GUILayout.Width(width - padding), GUILayout.Height(height - padding - 15)
             );
 
-            GUILayout.Label($"Green: {render.color.green.Value}");
-            render.color.green.Value = (int) GUILayout.HorizontalSlider(
-                render.color.green.Value, 0f, 255f
-            );
-
-            GUILayout.Label($"Blue: {render.color.blue.Value}");
-            render.color.blue.Value = (int) GUILayout.HorizontalSlider(
-                render.color.blue.Value, 0f, 255f
-            );
+            Config.Colors colors = config.colors;
 
             GUILayout.Label("== Render ==");
-            render.peakBoundaries.Value = GUILayout.Toggle(
-                render.peakBoundaries.Value, "Peak Boundaries"
-            );
-            render.eventTriggers.Value = GUILayout.Toggle(
-                render.eventTriggers.Value, "Event Triggers"
-            );
-            render.windMillWings.Value = GUILayout.Toggle(
-                render.windMillWings.Value, "Windmill Wings"
-            );
-            render.timeAttack.Value = GUILayout.Toggle(
-                render.timeAttack.Value, "Time Attack"
-            );
-            render.windSectors.Value = GUILayout.Toggle(
-                render.windSectors.Value, "Wind Sectors (ST)"
-            );
+            Config.Render render = config.render;
+            RenderOption("Peak Boundaries", render.peakBoundaries, colors.peakBoundaries);
+            RenderOption("Event Triggers", render.eventTriggers, colors.eventTriggers);
+            RenderOption("Windmill Wings", render.windMillWings, colors.windMillWings);
+            RenderOption("Time Attack", render.timeAttack, colors.timeAttack);
+            RenderOption("Wind Sectors (ST)", render.windSectors, colors.windSectors);
 
             GUILayout.Label("== Colliders ==");
             Config.Colliders colliders = config.render.colliders;
-
-            colliders.boxColliders.Value = GUILayout.Toggle(
-                colliders.boxColliders.Value, "Box Colliders"
-            );
-            colliders.capsuleColliders.Value = GUILayout.Toggle(
-                colliders.capsuleColliders.Value, "Capsule Colliders"
-            );
-            colliders.meshColliders.Value = GUILayout.Toggle(
-                colliders.meshColliders.Value, "Mesh Colliders"
-            );
-            colliders.sphereColliders.Value = GUILayout.Toggle(
-                colliders.sphereColliders.Value, "Sphere Colliders"
-            );
+            RenderOption("Box Colliders", colliders.boxColliders, colors.boxColliders);
+            RenderOption("Capsule Colliders", colliders.capsuleColliders, colors.capsuleColliders);
+            RenderOption("Mesh Colliders", colliders.meshColliders, colors.meshColliders);
+            RenderOption("Sphere Colliders", colliders.sphereColliders, colors.sphereColliders);
 
             GUILayout.Label("== Summit Stuff ==");
             Config.SummitStuff summitStuff = config.render.summitStuff;
+            // Summit stuff can have custom alpha values (at least for now)
+            RenderOption("Start Range", summitStuff.startRange, colors.startRange, true);
+            RenderOption("Stamper Range", summitStuff.stamperRange, colors.stamperRange, true);
+            RenderOption("Summit Range", summitStuff.summitRange, colors.summitRange, true);
+            RenderOption("Summit Level", summitStuff.summitLevel, colors.summitLevel, true);
 
-            GUILayout.Label($"Opacity ({summitStuff.opacity.Value})");
-            summitStuff.opacity.Value = (float) Math.Round(GUILayout.HorizontalSlider(
-                summitStuff.opacity.Value, 0f, 1f), 2
-            );
+            GUILayout.EndScrollView();
 
-            summitStuff.startRange.Value = GUILayout.Toggle(
-                summitStuff.startRange.Value, "Start Range"
-            );
-            summitStuff.stamperRange.Value = GUILayout.Toggle(
-                summitStuff.stamperRange.Value, "Stamper Range"
-            );
-            summitStuff.summitRange.Value = GUILayout.Toggle(
-                summitStuff.summitRange.Value, "Summit Range"
-            );
-            summitStuff.summitLevel.Value = GUILayout.Toggle(
-                summitStuff.summitLevel.Value, "Summit Level"
-            );
+            // Update displayed objects if clicked
+            if (GUILayout.Button("Update") == true) {
+                cache.Update();
+            }
 
             GUILayout.EndArea();
         }

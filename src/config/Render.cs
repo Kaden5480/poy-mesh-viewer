@@ -8,7 +8,6 @@ using MelonLoader;
 
 namespace MeshViewer.Config {
     public struct Render {
-        public Color color;
         public Colliders colliders;
         public SummitStuff summitStuff;
 
