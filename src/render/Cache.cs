@@ -1,5 +1,14 @@
 using System.Collections.Generic;
 
+
+#if BEPINEX
+using BepInEx.Configuration;
+
+#elif MELONLOADER
+using MelonLoader;
+
+#endif
+
 using UnityEngine;
 
 using Colors = MeshViewer.Config.Colors;
@@ -289,120 +298,97 @@ namespace MeshViewer {
 
         /**
          * <summary>
+         * Updates the rendering of a specific object.
+         * </summary>
+         * <param name="data">The data for the object</param>
+         * <param name="enabled">Whether rendering this object is enabled</param>
+         * <param name="color">The color to render this object with</param>
+         */
+#if BEPINEX
+        private void UpdateObject(
+            RenderData data,
+            ConfigEntry<bool> enabled,
+            ConfigEntry<string> color
+        ) {
+#elif MELONLOADER
+        private void UpdateObject(
+            RenderData data,
+            MelonPreferences_Entry<bool> enabled,
+            MelonPreferences_Entry<string> color
+        ) {
+#endif
+            if (enabled.Value == false) {
+                data.Hide();
+                return;
+            }
+
+            data.Show(color.Value);
+        }
+
+        /**
+         * <summary>
          * Updates the rendering of cached objects.
          * </summary>
          */
         public void Update() {
             Config.Colors colors = config.colors;
+            Config.Colliders colliders = config.render.colliders;
+            Config.Render render = config.render;
+            Config.SummitStuff summitStuff = config.render.summitStuff;
 
             // For each type of object, update whether it is displayed
             // and also the color which it will be displayed with
 
             foreach (RenderData data in cache) {
-                // Colliders
-                Config.Colliders colliders = config.render.colliders;
-                if (data.renderType == RenderType.BoxCollider
-                    && colliders.boxColliders.Value == true
-                ) {
-                    data.Show(colors.boxColliders.Value);
-                    continue;
+                // Render
+                if (data.parent.layer == LayerMask.NameToLayer("PeakBoundary")) {
+                    UpdateObject(data, render.peakBoundaries, colors.peakBoundaries);
                 }
-
-                if (data.renderType == RenderType.CapsuleCollider
-                    && colliders.capsuleColliders.Value == true
-                ) {
-                    data.Show(colors.capsuleColliders.Value);
-                    continue;
-                }
-
-                if (data.renderType == RenderType.MeshColliderInvisible
-                    && colliders.meshColliders.Value == true
-                ) {
-                    data.Show(colors.meshColliders.Value);
-                    continue;
-                }
-
-                if (data.renderType == RenderType.SphereCollider
-                    && colliders.sphereColliders.Value == true
-                ) {
-                    data.Show(colors.sphereColliders.Value);
-                    continue;
-                }
-
-                // Summit stuff
-                Config.SummitStuff summitStuff = config.render.summitStuff;
-                if (data.renderType == RenderType.SummitStuffStart
-                    && summitStuff.startRange.Value == true
-                ) {
-                    data.Show(colors.startRange.Value);
-                    continue;
-                }
-
-                if (data.renderType == RenderType.SummitStuffStamper
-                    && summitStuff.stamperRange.Value == true
-                ) {
-                    data.Show(colors.stamperRange.Value);
-                    continue;
-                }
-
-                if (data.renderType == RenderType.SummitStuffSummitLevel
-                    && summitStuff.summitLevel.Value == true
-                ) {
-                    data.Show(colors.summitLevel.Value);
-                    continue;
-                }
-
-                if (data.renderType == RenderType.SummitStuffSummitRange
-                    && summitStuff.summitRange.Value == true
-                ) {
-                    data.Show(colors.summitRange.Value);
-                    continue;
-                }
-
-                // Other rendering
-                Config.Render render = config.render;
-                if (data.parent.layer == LayerMask.NameToLayer("EventTrigger")) {
+                else if (data.parent.layer == LayerMask.NameToLayer("EventTrigger")) {
                     TimeAttackZone timeAttack = data.parent.GetComponent<TimeAttackZone>();
                     PeakWindSolemnTempest peakWind = data.parent.GetComponent<PeakWindSolemnTempest>();
 
                     // If this isn't a time attack zone/peak wind, it's another kind
                     // of event trigger
-                    if (render.eventTriggers.Value == true
-                        && timeAttack == null && peakWind == null
-                    ) {
-                        data.Show(colors.eventTriggers.Value);
-                        continue;
+                    if (timeAttack == null && peakWind == null) {
+                        UpdateObject(data, render.eventTriggers, colors.eventTriggers);
                     }
-                    else if (timeAttack != null
-                        && render.timeAttack.Value == true
-                    ) {
-                        data.Show(colors.timeAttack.Value);
-                        continue;
+                    else if (timeAttack != null) {
+                        UpdateObject(data, render.timeAttack, colors.timeAttack);
                     }
-                    else if (peakWind != null
-                        && render.windSectors.Value == true
-                    ) {
-                        data.Show(colors.windSectors.Value);
-                        continue;
+                    else if (peakWind != null) {
+                        UpdateObject(data, render.windSectors, colors.windSectors);
                     }
                 }
-
-                if (data.parent.layer == LayerMask.NameToLayer("PeakBoundary")
-                    && render.peakBoundaries.Value == true
-                ) {
-                    data.Show(colors.peakBoundaries.Value);
-                    continue;
+                else if (data.parent.layer == LayerMask.NameToLayer("WindMillWings")) {
+                    UpdateObject(data, render.windMillWings, colors.windMillWings);
                 }
-
-                if (data.parent.layer == LayerMask.NameToLayer("WindMillWings")
-                    && render.windMillWings.Value == true
-                ) {
-                    data.Show(colors.windMillWings.Value);
-                    continue;
+                // Colliders
+                else if (data.renderType == RenderType.BoxCollider) {
+                    UpdateObject(data, colliders.boxColliders, colors.boxColliders);
                 }
-
-                // If this object wasn't selected to be rendered, just hide it
-                data.Hide();
+                else if (data.renderType == RenderType.CapsuleCollider) {
+                    UpdateObject(data, colliders.capsuleColliders, colors.capsuleColliders);
+                }
+                else if (data.renderType == RenderType.MeshColliderInvisible) {
+                    UpdateObject(data, colliders.meshColliders, colors.meshColliders);
+                }
+                else if (data.renderType == RenderType.SphereCollider) {
+                    UpdateObject(data, colliders.sphereColliders, colors.sphereColliders);
+                }
+                // Summit stuff
+                else if (data.renderType == RenderType.SummitStuffStart) {
+                    UpdateObject(data, summitStuff.startRange, colors.startRange);
+                }
+                else if (data.renderType == RenderType.SummitStuffStamper) {
+                    UpdateObject(data, summitStuff.stamperRange, colors.stamperRange);
+                }
+                else if (data.renderType == RenderType.SummitStuffSummitLevel) {
+                    UpdateObject(data, summitStuff.summitLevel, colors.summitLevel);
+                }
+                else if (data.renderType == RenderType.SummitStuffSummitRange) {
+                    UpdateObject(data, summitStuff.summitRange, colors.summitRange);
+                }
             }
         }
     }
