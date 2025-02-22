@@ -304,15 +304,15 @@ namespace MeshViewer {
 #endif
 
         // Default colors
-        private string colorPeakBoundaries   = RGBToString(224, 108, 117);
+        private string colorPeakBoundaries   = RGBToString(198, 120, 221);
         private string colorEventTriggers    = RGBToString(229, 192, 123);
         private string colorWindMillWings    = RGBToString(152, 195, 121);
-        private string colorTimeAttack       = RGBToString(86, 182, 194);
+        private string colorTimeAttack       = RGBToString(90, 207, 155);
         private string colorWindSectors      = RGBToString(97, 175, 239);
-        private string colorBoxColliders     = RGBToString(198, 120, 221);
-        private string colorCapsuleColliders = RGBToString(193, 152, 193);
+        private string colorBoxColliders     = RGBToString(120, 120, 205);
+        private string colorCapsuleColliders = RGBToString(154, 94, 192);
         private string colorMeshColliders    = RGBToString(122, 122, 122);
-        private string colorSphereColliders  = RGBToString(204, 204, 204);
+        private string colorSphereColliders  = RGBToString(86, 182, 194);
         private string colorStartRange       = RGBToString(128, 181, 189);
         private string colorStamperRange     = RGBToString(77, 94, 109);
         private string colorSummitRange      = RGBToString(200, 200, 200);
