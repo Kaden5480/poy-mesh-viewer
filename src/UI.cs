@@ -193,7 +193,7 @@ namespace MeshViewer {
                 cache.Update();
             }
 
-            GUILayout.Label("== Render ==");
+            GUILayout.Label("== Categorized ==");
             Config.Render render = config.render;
             RenderOption("Peak Boundaries", render.peakBoundaries, colors.peakBoundaries);
             RenderOption("Event Triggers", render.eventTriggers, colors.eventTriggers);
@@ -203,7 +203,7 @@ namespace MeshViewer {
             RenderOption("Player Physics", render.playerPhysics, colors.playerPhysics);
             RenderOption("Player Triggers", render.playerTriggers, colors.playerTriggers);
 
-            GUILayout.Label("== Colliders ==");
+            GUILayout.Label("== Uncategorized ==");
             Config.Colliders colliders = config.render.colliders;
             RenderOption("Box Colliders", colliders.boxColliders, colors.boxColliders);
             RenderOption("Capsule Colliders", colliders.capsuleColliders, colors.capsuleColliders);
