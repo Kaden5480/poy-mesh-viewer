@@ -16,6 +16,7 @@ using Colors = MeshViewer.Config.Colors;
 namespace MeshViewer {
     public class Cache {
         public Config.Cfg config { get; }
+
         private List<RenderData> cache;
 
         /**
@@ -92,11 +93,6 @@ namespace MeshViewer {
          * <param name="collider">The collider to cache</param>
          */
         private void CacheBoxCollider(GameObject obj, BoxCollider collider) {
-            // Check if already visible
-            if (CacheVisibleCollider(obj, RenderType.BoxCollider) == true) {
-                return;
-            }
-
             GameObject child = GameObject.CreatePrimitive(PrimitiveType.Cube);
             GameObject.DestroyImmediate(child.GetComponent<BoxCollider>());
 
@@ -105,7 +101,13 @@ namespace MeshViewer {
             child.transform.SetParent(obj.transform);
             child.transform.localRotation = Quaternion.identity;
             child.transform.localPosition = collider.center;
-            child.transform.localScale = collider.size;
+
+            Vector3 size = collider.size;
+            float padding = 0.0001f;
+
+            child.transform.localScale = new Vector3(
+                size.x + padding, size.y + padding, size.z + padding
+            );
 
             cache.Add(new RenderData(obj, child, RenderType.BoxCollider, MakeMaterial()));
         }
