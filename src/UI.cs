@@ -33,6 +33,35 @@ namespace MeshViewer {
 
         /**
          * <summary>
+         * Sets the cursor lock state.
+         * </summary>
+         */
+        private void SetCursorLock() {
+            if (cache.playerManager != null) {
+                cache.playerManager.AllowPlayerControl(!showUI);
+            }
+
+            if (cache.peakSummited != null) {
+                cache.peakSummited.DisableEverythingButClimbing(showUI);
+            }
+
+            if (showUI == true) {
+                Cursor.visible = true;
+                Cursor.lockState = CursorLockMode.None;
+                InGameMenu.hasBeenInMenu = true;
+            }
+            else if (cache.inGameMenu != null
+                && cache.inGameMenu.isMainMenu == true
+            ) {
+                return;
+            } else {
+                Cursor.visible = false;
+                Cursor.lockState = CursorLockMode.Locked;
+            }
+        }
+
+        /**
+         * <summary>
          * Constructs an instance of UI.
          * </summary>
          * <param name="cache">The cache of all objects in the scene</param>
@@ -50,6 +79,7 @@ namespace MeshViewer {
         public void Update() {
             if (Input.GetKeyDown(config.toggleKeybind)) {
                 showUI = !showUI;
+                SetCursorLock();
             }
         }
 
@@ -163,6 +193,8 @@ namespace MeshViewer {
             if (showUI == false) {
                 return;
             }
+
+            SetCursorLock();
 
             // Display everything in a box with a scroll view
             GUILayout.BeginArea(new Rect(10, 10, width, height), GUI.skin.box);

@@ -17,6 +17,10 @@ namespace MeshViewer {
     public class Cache {
         public Config.Cfg config { get; }
 
+        public InGameMenu inGameMenu;
+        public PeakSummited peakSummited;
+        public PlayerManager playerManager;
+
         private List<RenderData> cache;
 
         /**
@@ -295,6 +299,10 @@ namespace MeshViewer {
          * </summary>
          */
         public void CacheObjects() {
+            inGameMenu = GameObject.FindObjectOfType<InGameMenu>();
+            peakSummited = GameObject.FindObjectOfType<PeakSummited>();
+            playerManager = GameObject.FindObjectOfType<PlayerManager>();
+
             GameObject[] objs = GameObject.FindObjectsOfType<GameObject>();
 
             foreach (GameObject obj in objs) {
@@ -310,6 +318,10 @@ namespace MeshViewer {
          * </summary>
          */
         public void Clear() {
+            inGameMenu = null;
+            peakSummited = null;
+            playerManager = null;
+
             cache.Clear();
         }
 
