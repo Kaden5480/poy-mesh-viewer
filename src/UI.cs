@@ -201,7 +201,7 @@ namespace MeshViewer {
 
             scrollPosition = GUILayout.BeginScrollView(
                 scrollPosition,
-                GUILayout.Width(width - padding), GUILayout.Height(height - padding - 15)
+                GUILayout.Width(width - padding), GUILayout.Height(height - padding - 37)
             );
 
             Config.Colors colors = config.colors;
@@ -256,6 +256,11 @@ namespace MeshViewer {
             // Update displayed objects if clicked
             if (GUILayout.Button("Update") == true) {
                 cache.Update();
+            }
+
+            if (GUILayout.Button("Close") == true) {
+                showUI = false;
+                SetCursorLock();
             }
 
             GUILayout.EndArea();
