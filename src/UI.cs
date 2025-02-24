@@ -50,9 +50,11 @@ namespace MeshViewer {
                 Cursor.lockState = CursorLockMode.None;
                 InGameMenu.hasBeenInMenu = true;
             }
-            else if (cache.inGameMenu != null
-                && cache.inGameMenu.isMainMenu == true
+            else if (cache.inGameMenu != null &&
+                (cache.inGameMenu.isMainMenu == true || cache.inGameMenu.inMenu == true)
             ) {
+                return;
+            } else if (InGameMenu.isCurrentlyNavigationMenu == true) {
                 return;
             } else {
                 Cursor.visible = false;
