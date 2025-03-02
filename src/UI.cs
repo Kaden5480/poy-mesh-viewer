@@ -14,6 +14,7 @@ using MelonLoader;
 namespace MeshViewer {
     public class UI {
         private bool showUI;
+        private bool allowingMovement = true;
         private Cache cache;
 
         // Size info for the GUI
@@ -33,6 +34,24 @@ namespace MeshViewer {
 
         /**
          * <summary>
+         * Toggles whether movement is allowed.
+         * </summary>
+         */
+        private void AllowMovement(bool allow) {
+            allowingMovement = allow;
+
+            if (cache.playerManager != null) {
+                cache.playerManager.AllowPlayerControl(allow);
+            }
+
+            if (cache.peakSummited != null) {
+                cache.peakSummited.DisableEverythingButClimbing(!allow);
+            }
+
+        }
+
+        /**
+         * <summary>
          * Sets the cursor lock state.
          * </summary>
          */
@@ -45,18 +64,11 @@ namespace MeshViewer {
                 return;
             }
 
-            if (cache.playerManager != null) {
-                cache.playerManager.AllowPlayerControl(!showUI);
-            }
-
-            if (cache.peakSummited != null) {
-                cache.peakSummited.DisableEverythingButClimbing(showUI);
-            }
-
             if (showUI == true) {
                 Cursor.visible = true;
                 Cursor.lockState = CursorLockMode.None;
                 InGameMenu.hasBeenInMenu = true;
+                AllowMovement(false);
             }
             else if (cache.inGameMenu != null &&
                 (cache.inGameMenu.isMainMenu == true || cache.inGameMenu.inMenu == true)
@@ -64,7 +76,8 @@ namespace MeshViewer {
                 return;
             } else if (InGameMenu.isCurrentlyNavigationMenu == true) {
                 return;
-            } else {
+            } else if (allowingMovement == false && showUI == false) {
+                AllowMovement(true);
                 Cursor.visible = false;
                 Cursor.lockState = CursorLockMode.Locked;
             }
