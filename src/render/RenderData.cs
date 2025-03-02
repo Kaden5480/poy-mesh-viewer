@@ -36,7 +36,7 @@ namespace MeshViewer {
 
             renderer = obj.GetComponent<Renderer>();
 
-            // If this is a object, store its normal material
+            // If this is a visible object, store its normal material
             if (visible == true) {
                 normalMaterial = renderer.material;
             }
