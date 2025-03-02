@@ -37,6 +37,14 @@ namespace MeshViewer {
          * </summary>
          */
         private void SetCursorLock() {
+            if (InGameMenu.isLoading == true
+                || EnterPeakScene.enteringPeakScene == true
+                || EnterPeakScene.enteringAlpScene == true
+                || EnterRoomSegmentScene.enteringScene == true
+            ) {
+                return;
+            }
+
             if (cache.playerManager != null) {
                 cache.playerManager.AllowPlayerControl(!showUI);
             }
