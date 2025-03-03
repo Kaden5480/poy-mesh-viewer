@@ -47,40 +47,6 @@ namespace MeshViewer {
             if (cache.peakSummited != null) {
                 cache.peakSummited.DisableEverythingButClimbing(!allow);
             }
-
-        }
-
-        /**
-         * <summary>
-         * Sets the cursor lock state.
-         * </summary>
-         */
-        private void SetCursorLock() {
-            if (InGameMenu.isLoading == true
-                || EnterPeakScene.enteringPeakScene == true
-                || EnterPeakScene.enteringAlpScene == true
-                || EnterRoomSegmentScene.enteringScene == true
-            ) {
-                return;
-            }
-
-            if (showUI == true) {
-                Cursor.visible = true;
-                Cursor.lockState = CursorLockMode.None;
-                InGameMenu.hasBeenInMenu = true;
-                AllowMovement(false);
-            }
-            else if (cache.inGameMenu != null &&
-                (cache.inGameMenu.isMainMenu == true || cache.inGameMenu.inMenu == true)
-            ) {
-                return;
-            } else if (InGameMenu.isCurrentlyNavigationMenu == true) {
-                return;
-            } else if (allowingMovement == false && showUI == false) {
-                AllowMovement(true);
-                Cursor.visible = false;
-                Cursor.lockState = CursorLockMode.Locked;
-            }
         }
 
         /**
@@ -96,13 +62,51 @@ namespace MeshViewer {
 
         /**
          * <summary>
+         * Checks whether the player is currently in a menu.
+         * </summary>
+         */
+        private bool IsInMenu() {
+            if (cache.inGameMenu == null) {
+                return false;
+            }
+
+            return cache.inGameMenu.isMainMenu == true
+                || cache.inGameMenu.inMenu == true
+                || InGameMenu.isCurrentlyNavigationMenu == true;
+        }
+
+        /**
+         * <summary>
          * Executes each frame to check for a toggle input.
          * </summary>
          */
         public void Update() {
             if (Input.GetKeyDown(config.toggleKeybind)) {
                 showUI = !showUI;
-                SetCursorLock();
+            }
+
+            if (InGameMenu.isLoading == true
+                || EnterPeakScene.enteringPeakScene == true
+                || EnterPeakScene.enteringAlpScene == true
+                || EnterRoomSegmentScene.enteringScene == true
+            ) {
+                return;
+            }
+
+            // Toggle movement in very specific cases
+            if (showUI == true) {
+                AllowMovement(false);
+                Cursor.visible = true;
+                Cursor.lockState = CursorLockMode.None;
+                InGameMenu.hasBeenInMenu = true;
+            }
+            else if (allowingMovement == false
+                && showUI == false
+                && IsInMenu() == false
+            ) {
+                AllowMovement(true);
+                Cursor.visible = false;
+                Cursor.lockState = CursorLockMode.Locked;
             }
         }
 
@@ -217,8 +221,6 @@ namespace MeshViewer {
                 return;
             }
 
-            SetCursorLock();
-
             // Display everything in a box with a scroll view
             GUILayout.BeginArea(new Rect(10, 10, width, height), GUI.skin.box);
 
@@ -283,7 +285,6 @@ namespace MeshViewer {
 
             if (GUILayout.Button("Close") == true) {
                 showUI = false;
-                SetCursorLock();
             }
 
             GUILayout.EndArea();

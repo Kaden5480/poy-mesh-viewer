@@ -4,7 +4,7 @@
     <Platform>Any CPU</Platform>
     <AssemblyName>MeshViewer</AssemblyName>
     <Description>A Peaks of Yore mod which displays colliders and other stuff</Description>
-    <Version>0.1.2</Version>
+    <Version>0.1.3</Version>
     <RootNamespace>$(AssemblyName)</RootNamespace>
     <Configurations>Debug-BepInEx;Release-BepInEx;Debug-MelonLoader;Release-MelonLoader</Configurations>
     <Configuration Condition="'$(Configuration)' == ''">Debug-BepInEx</Configuration>
